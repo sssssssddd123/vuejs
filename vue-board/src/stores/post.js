@@ -5,6 +5,7 @@ import axios from "axios";
 export const usePostStore = defineStore("post", () => {
   // state
   const posts = ref([]);
+  const comments = ref([]);
 
   // getter
   // id에 맞는 값을 가져옴
@@ -15,27 +16,45 @@ export const usePostStore = defineStore("post", () => {
 
   // action
   const addPost = async (newPost) => {
-    console.log(newPost);
-    const result = await axios.post(`http://localhost:3000/`, newPost);
-    console.log("test");
+    const result = await axios.post(`http://192.168.0.45:3000/`, newPost);
     posts.value.push({ ...newPost, id: result.data.insertId });
   };
 
+  const addComment = async (newComment) => {
+    // const result =
+    await axios.post(`http://192.168.0.45:3000/addComment/`, newComment);
+  };
+
+  // const fetchComments = async () => {
+  //   const response = await axios.get(`http://localhost:3000/comments/list`);
+  //   console.log(response);
+  //   comments.value = response.data;
+  // };
+
   const deletePost = async (id) => {
-    await axios.delete(`http://localhost:3000/${id}`);
+    await axios.delete(`http://192.168.0.45:3000/${id}`);
     posts.value = posts.value.filter((post) => post.id !== id);
   };
 
   const fetchPosts = async () => {
-    const response = await axios.get(`http://localhost:3000/`);
+    const response = await axios.get(`http://192.168.0.45:3000/`);
     posts.value = response.data;
   };
 
   const fetchPost = async (id) => {
-    const response = await axios.get(`http://localhost:3000/${id}`);
-    posts.value = response.data;
-    return posts.value[0];
+    const response = await axios.get(`http://192.168.0.45:3000/${id}`);
+    posts.value = [response.data.post];
+    comments.value = response.data.comments;
+    return { posts: posts.value, comments: comments.value };
   };
 
-  return { posts, getPostById, addPost, deletePost, fetchPosts, fetchPost };
+  return {
+    posts,
+    getPostById,
+    addPost,
+    addComment,
+    deletePost,
+    fetchPosts,
+    fetchPost,
+  };
 });
